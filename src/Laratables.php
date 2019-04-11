@@ -106,17 +106,12 @@ class Laratables
         $orderByValue = $this->columnManager->getOrderBy();
         $orderByStatement = is_array($orderByValue) ? 'orderBy' : 'orderByRaw';
         $orderByValue = Arr::wrap($orderByValue);
-        $length = (int)request('length');
 
-        return $length > -1
-            ? $query->with($this->columnManager->getRelations())
-                ->offset((int)request('start'))
-                ->limit($length)
-                ->{$orderByStatement}(...$orderByValue)
-                ->get($this->columnManager->getSelectColumns())
-            : $query->with($this->columnManager->getRelations())
-                ->{$orderByStatement}(...$orderByValue)
-                ->get($this->columnManager->getSelectColumns());
+        return $query->with($this->columnManager->getRelations())
+            ->offset((int) request('start'))
+            ->limit(min((int) request('length'), 100))
+            ->{$orderByStatement}(...$orderByValue)
+            ->get($this->columnManager->getSelectColumns());
     }
 
     /**
